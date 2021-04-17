@@ -4,16 +4,17 @@ int main()
 {
 	SerialPort port("/dev/ttyUSB0");
 	
-	char* str = "5*1000/0/0!1";
-    char buffer[15];
+	std::string str = "5*1000/0/01!";
+    char buffer[255];
 	
 	for ( int i = 0; i < 4; ++ i) 
     {
-		port.writeSerialPort(str, 10);
+		str = str + std::to_string(i);
+		port.writeSerialPort(str.c_str(), str.length());
 		
 		int read = 0;
 		do {
-			read = port.readSerialPort(buffer, 15);
+			read = port.readSerialPort(buffer, 255);
 		}
 		while( read == 0);
 		printf("Received %d characters\n", read);
