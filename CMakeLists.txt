@@ -55,6 +55,19 @@ add_executable(SerialTestLone
 			)
 			
 
+# Locate libraries and headers
+find_package(WiringPi REQUIRED)
+find_package(Threads REQUIRED) 
+
+# Include headers
+include_directories(${WIRINGPI_INCLUDE_DIRS}) 
+
+# Link against libraries
+#target_link_libraries(SerialTestLone ${WIRINGPI_LIBRARIES}) 
+#target_link_libraries(SerialTestLone ${CMAKE_THREAD_LIBS_INIT}) 
+
+target_link_libraries(SerialTest ${WIRINGPI_LIBRARIES})
+
 # Post Build script to copy realsense2.dll
 if(WIN32)
 message(STATUS "Adding Post build script to copy realsense2.dll to project's binary folder")

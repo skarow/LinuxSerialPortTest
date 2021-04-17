@@ -1,17 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <vector>
 
 int main(int argc, char* argv[]) 
 {
 
 	char * portName = "/dev/ttyUSB0";
     struct termios serial;
-    char* str = "Hello";
-    char buffer[10];
+    //std::string str = "5*1000/0/0!5*0/1000/0!";
+    char buffer[255];
+    
+    std::string str = "";
+    std::vector<std::string> vStrCommands;
+    vStrCommands.push_back("1*0/10000/0!");
+    vStrCommands.push_back("1*10000/0/0!");
+	vStrCommands.push_back("1*0/0/1000!");
+	vStrCommands.push_back("5*1000/0/0!5*0/1000/0!");
 
     printf("Opening %s\n", argv[1]);
 
@@ -22,7 +30,7 @@ int main(int argc, char* argv[])
         perror(argv[1]);
         return -1;
     }
-    usleep(3500000);
+    
 
     if (tcgetattr(fd, &serial) < 0) {
         perror("Getting configuration");
@@ -43,12 +51,19 @@ int main(int argc, char* argv[])
 
     tcsetattr(fd, TCSANOW, &serial); // Apply configuration
     
+    usleep(3500000);
+    
+    tcdrain(fd);
+    
+    read(fd, buffer, sizeof(buffer));
+    
     for ( int i = 0; i < 4; ++ i) 
     {
+		str = vStrCommands[i];
 		// Attempt to send and receive
-		printf("Sending: %s\n", str);
+		printf("Sending: %s\n", str.c_str());
 
-		int wcount = write(fd, str, strlen(str));
+		int wcount = write(fd, str.c_str(), str.length());
 		if (wcount < 0) {
 			perror("Write");
 			return -1;
